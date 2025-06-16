@@ -1,0 +1,23 @@
+nav a.live {
+  color: #34495e;
+  cursor: default;
+}
+
+nav a.live:hover {
+  text-decoration: none;
+}
+
+nav a.live:after {
+  content: "";
+  display: block;
+  position: relative;
+  left: calc(50% - 7px);
+  top: 9px;
+  width: 14px;
+  height: 14px;
+  background: #f7f9fa;
+  border-left: 1px solid #e4e5e7;
+  border-bottom: 1px solid #e4e5e7;
+  -moz-transform: rotate(45deg);
+  -webkit-transform: rotate(-45deg);
+}

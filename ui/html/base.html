@@ -1,0 +1,82 @@
+{{define "base"}}
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'nonce-{{.Nonce}}'" />
+  <title>{{template "title" .}} - Snippetbox</title>
+  <!-- Link to the CSS stylesheet and favicon -->
+  <!-- <link rel='stylesheet' href='/static/css/main.css'> -->
+  <link rel="stylesheet" href="/static/css/bulma.min.css" />
+  <!-- <link rel="stylesheet" href="/static/css/custom.min.css" /> -->
+  <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" />
+  <script defer src="/static/js/alpine.min.js"></script>
+</head>
+
+<body>
+  <header>
+    <section class="hero is-small">
+      <div class="hero-body">
+        <h1 class="title is-centered">
+          <a href="/">Snippetbox</a>
+        </h1>
+      </div>
+    </section>
+  </header>
+  <main>
+    <section class="hero is-small">
+      {{template "nav" .}}
+      <!-- Hero content: will be in the middle -->
+      <div class="hero-body">
+        <div class="container has-text-centered">
+          <!-- <p class="title">Title</p> -->
+          <!-- <p class="subtitle">Subtitle</p> -->
+          <!-- Display the flash message if one exists -->
+          {{with .Flash}}
+          <div class="notification is-success is-light">
+            <button class="delete"></button>{{.}}
+          </div>
+          {{end}}
+          <div class="fixed-grid has-4-cols">
+            <div class="grid">
+              <div class="cell"></div>
+              <div class="cell is-col-span-2">{{template "main" .}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Hero footer: will stick at the bottom -->
+      <!-- <div class="hero-foot"> -->
+      <!--   <nav class="tabs"> -->
+      <!--     <div class="container"> -->
+      <!--       <ul> -->
+      <!--         <li class="is-active"><a>Overview</a></li> -->
+      <!--         <li><a>Modifiers</a></li> -->
+      <!--         <li><a>Grid</a></li> -->
+      <!--         <li><a>Elements</a></li> -->
+      <!--         <li><a>Components</a></li> -->
+      <!--         <li><a>Layout</a></li> -->
+      <!--       </ul> -->
+      <!--     </div> -->
+      <!--   </nav> -->
+      <!-- </div> -->
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="content has-text-centered">
+      <p>
+        Powered by <a href="https://golang.org/">Go</a> in {{.CurrentYear}}
+      </p>
+      <!-- {{.Uri}} -->
+      <!-- {{.Nonce}} -->
+      <!-- {{.Nonce}} -->
+    </div>
+  </footer>
+  <!-- <script src="/static/js/main.js" type="text/javascript"></script> -->
+</body>
+
+</html>
+{{end}}

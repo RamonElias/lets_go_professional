@@ -1,0 +1,18 @@
+{{define "title"}}Snippet #{{.Snippet.ID}}{{end}} {{define "main"}} {{with
+.Snippet}}
+<div class="content">
+  <h2>
+    <strong>{{.Title}}</strong>
+    <span>#{{.ID}}</span>
+  </h2>
+  <p>
+    <pre><code>{{.Content}}</code></pre>
+  </p>
+  <blockquote>
+    <time>Created: {{humanDate .Created}}</time>
+  </blockquote>
+  <blockquote>
+    <time>Expires: {{humanDate .Expires}}</time>
+  </blockquote>
+</div>
+{{end}} {{end}}

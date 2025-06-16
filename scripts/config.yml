@@ -1,0 +1,43 @@
+# Set to true to use lowercase keywords instead of uppercase.
+lowercaseKeywords: false
+connections:
+  # - alias: dsn_mysql
+  #   driver: mysql
+  #   dataSourceName: root:root@tcp(127.0.0.1:13306)/world
+  # - alias: postgres_air
+  #   driver: postgresql
+  #   dataSourceName: postgres://postgres:123456@localhost/postgres_air
+  # - alias: pagila
+  #   driver: postgresql
+  #   dataSourceName: postgres://postgres:123456@localhost/pagila
+  # - alias: chinook_auto_increment
+  #   driver: postgresql
+  #   dataSourceName: postgres://postgres:123456@localhost/chinook_auto_increment
+  # - alias: postgres_air
+  #   driver: postgresql
+  #   dataSourceName: postgres://postgres:123456@localhost/postgres_air
+  # - alias: f1db
+  #   driver: postgresql
+  #   dataSourceName: postgres://postgres:123456@localhost/f1db
+  - alias: greenlight_postgresql
+    driver: postgresql
+    dataSourceName: postgres://greenlight:greenlight@localhost/greenlight
+  - alias: greenlight_sqlite3
+    driver: sqlite3
+    dataSourceName: file:../database/greenlight.db
+  # - alias: pokemon
+  #   driver: sqlite3
+  #   dataSourceName: file:../database/pokemon.db
+# export POSTGRESQL_DB_DSN='postgres://postgres:123456@localhost/tickets' ; export GREENLIGHT_DB_DSN='postgres://greenlight:greenlight@localhost/greenlight'
+# - alias: postgres_air
+#   driver: postgresql
+#   proto: tcp
+#   user: postgres
+#   passwd: 123456
+#   host: 127.0.0.1
+#   port: 5432
+#   dbName: postgres_air
+
+# params:
+#   autocommit: "true"
+#   tls: skip-verify

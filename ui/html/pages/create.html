@@ -1,0 +1,81 @@
+{{define "title"}}Create a New Snippet{{end}} {{define "main"}}
+<form action="/snippet/create" method="POST">
+  <!-- Include the CSRF token -->
+  <input type="hidden" name="csrf_token" value="{{.CSRFToken}}" />
+
+  <div class="field">
+    <label class="label">Title</label>
+    <div class="control">
+      <input
+        class="input {{with .Form.FieldErrors.title}} is-danger {{end}}"
+        name="title"
+        placeholder="Title"
+        type="text"
+        value="{{.Form.Title}}"
+      />
+    </div>
+    {{with .Form.FieldErrors.title}}
+    <p class="help is-danger">{{.}}</p>
+    {{end}}
+  </div>
+
+  <div class="field">
+    <label class="label">Content</label>
+    <div class="control">
+      <textarea
+        name="content"
+        class="textarea is-medium {{with .Form.FieldErrors.content}} is-danger {{end}}"
+      >
+ {{.Form.Content}}
+      </textarea>
+    </div>
+    {{with .Form.FieldErrors.content}}
+    <p class="help is-danger">{{.}}</p>
+    {{end}}
+  </div>
+
+  <div class="control">
+    <label class="radio">
+      <!-- Here we use the `if` action to check if the value of the re-populated expires field equals 365. If it does, then we render the `checked` attribute so that the radio input is re-selected. -->
+      <input
+        type="radio"
+        name="expires"
+        value="365"
+        {{if
+        (eq
+        .Form.Expires
+        365)}}checked{{end}}
+      />
+      One Year
+    </label>
+    <label class="radio">
+      <input
+        type="radio"
+        name="expires"
+        value="7"
+        {{if
+        (eq
+        .Form.Expires
+        7)}}checked{{end}}
+      />
+      One Week
+    </label>
+    <label class="radio">
+      <input
+        type="radio"
+        name="expires"
+        value="1"
+        {{if
+        (eq
+        .Form.Expires
+        1)}}checked{{end}}
+      />
+      One Day
+    </label>
+  </div>
+
+  <p class="control">
+    <input type="submit" class="button is-link" value="Publish Snippet" />
+  </p>
+</form>
+{{end}}

@@ -1,0 +1,33 @@
+{{define "title"}}Home{{end}} {{define "main"}}
+<h1 x-data="myComponent" x-text="message"></h1>
+<h2 class="title">Latest Snippets</h2>
+{{if .Snippets}}
+<table class="table">
+  <thead>
+    <tr>
+      <th><abbr title="Title">Title</abbr></th>
+      <th><abbr title="Created">Created</abbr></th>
+      <th><abbr title="ID">ID</abbr></th>
+    </tr>
+  </thead>
+  <tbody>
+    {{range .Snippets}}
+    <tr>
+      <td><a href="/snippet/view/{{.ID}}">{{.Title}}</a></td>
+      <td>{{humanDate .Created}}</td>
+      <th>#{{.ID}}</th>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{else}}
+<h3 class="title">There's nothing to see here... yet!</h3>
+{{end}}
+<script nonce="{{.Nonce}}">
+  document.addEventListener("alpine:init", () => {
+    Alpine.data("myComponent", () => ({
+      message: "I need Alpine",
+    }));
+  });
+</script>
+{{end}}
