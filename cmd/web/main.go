@@ -109,7 +109,7 @@ func main() {
 	// https://github.com/gravityblast/fresh/blob/master/runner/settings.go
 	debug := flag.Bool("debug", true, "Enable debug mode")
 	cfg.debug = *debug
-	embedded := flag.Bool("embedded", false, "Use embedded files for static assets")
+	embedded := flag.Bool("embedded", true, "Use embedded files for static assets")
 	cfg.embedded = *embedded
 
 	flag.Parse()

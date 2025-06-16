@@ -1,0 +1,10 @@
+# greenlight.alexedwards.net {
+# 0.0.0.0:443 {
+:80 {
+  respond /debug/* "Not Permitted" 403
+  reverse_proxy localhost:8076
+  log {
+    output file /var/log/caddy/access.log
+  }
+}
+

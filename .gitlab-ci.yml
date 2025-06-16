@@ -1,0 +1,69 @@
+# This file is a template, and might need editing before it works on your project.
+# You can copy and paste this template into a new `.gitlab-ci.yml` file.
+# You should not add this template to an existing `.gitlab-ci.yml` file by using the `include:` keyword.
+#
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/ee/development/cicd/templates.html
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Go.gitlab-ci.yml
+
+image: golang:latest
+
+stages:
+  - setup
+  - test
+  - build
+  - deploy
+
+# Stage 1: Decode and save the .env file as an artifact
+setup_env:
+  stage: setup
+  script:
+    # https://gitlab.com/RamonElias/sqlc_greenlight/-/settings/ci_cd#js-cicd-variables-settings
+    # https://gitlab.com/RamonElias/lets_go_professional/-/settings/ci_cd#js-cicd-variables-settings
+    # base64 ./.env | xclip -selection clipboard
+    # Decode the Base64-encoded .env file and save it
+    - echo "$ENV_FILE" | base64 --decode > .env
+  artifacts:
+    paths:
+      - .env # Persist the .env file for later stages
+    expire_in: 1 hour # Artifacts will expire and be deleted after 1 hour
+
+format:
+  stage: test
+  script:
+    # - echo "$ENV_FILE" | base64 --decode > .env
+    # - cat .env
+    - go version
+    - go env
+    - make tidy
+    - make audit
+    - go fmt $(go list ./... | grep -v /vendor/)
+    - go vet $(go list ./... | grep -v /vendor/)
+    - go test -race $(go list ./... | grep -v /vendor/)
+
+compile:
+  stage: build
+  script:
+    # - mkdir -p mybinaries
+    # - go build -o mybinaries ./...
+    - make build/web/in-gitlab
+  artifacts:
+    paths:
+      - mybinaries
+    expire_in: 1 hour # Artifacts will expire and be deleted after 1 hour
+
+deploy:
+  stage: deploy
+  environment: production
+  script:
+    # Decode the .pem key and save it to a file
+    - echo "$EC2_PEM_KEY" | base64 --decode > ec2-key.pem
+    - chmod 400 ec2-key.pem # Set proper permissions for the .pem file
+    # Stop the WEB APP and Caddy services
+    - ssh -t -o StrictHostKeyChecking=no -i ./ec2-key.pem "$EC2_PATH" 'echo `date '+%d/%m/%Y_%H:%M:%S'` > ~/coding/deploys/deploy && sudo systemctl stop web_app && sudo systemctl stop caddy'
+    # Copy the mybinaries folder to the EC2 instance using scp
+    # Copy the mybinaries folder to the EC2 instance using scp
+    # scp -o IdentitiesOnly=yes -i ~/.ssh/ED25519-i-03bf3e399564b8523.pem
+    - scp -o StrictHostKeyChecking=no -i ./ec2-key.pem -r mybinaries/linux_amd64/web "$EC2_PATH":"$SCP_PATH"
+    - ssh -t -o StrictHostKeyChecking=no -i ./ec2-key.pem "$EC2_PATH" 'echo `date '+%d/%m/%Y_%H:%M:%S'` web_app from gitlab > ~/coding/deploys/deploy && sudo cp ~/coding/deploys/web_app/web_app.service /etc/systemd/system/ && sudo systemctl enable web_app && sudo systemctl restart web_app && sudo cp ~/coding/deploys/web_app/Caddyfile /etc/caddy/ && sudo systemctl restart caddy && sudo systemctl reload caddy'

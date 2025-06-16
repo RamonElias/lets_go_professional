@@ -1,0 +1,59 @@
+# Set the email address that should be used to contact you if there is a problem with 
+# your TLS certificates.
+{
+  email eliasramondos@gmail.com
+}
+
+# greenlight.alexedwards.net {
+# 0.0.0.0:443 {
+# 0.0.0.0:80 {
+#   reverse_proxy 0.0.0.0:8076
+#   respond /debug/* "Not Permitted" 403
+#   # tls internal
+# }
+
+# Serve HTTP (port 80) and redirect to HTTPS (port 443)
+:80 {
+  respond /debug/* "Not Permitted" 403
+  redir https://{host}{uri} permanent
+}
+
+# Serve HTTPS (port 443) with automatic TLS
+:443 {
+  # tls {
+  # Optional: Specify protocols (default is TLS 1.2 and 1.3)
+  #     protocols tls1.2 tls1.3
+  # }
+
+  # @noTrailingSlash path_regexp ^(.*[^/])$
+  # rewrite @noTrailingSlash {http.regexp.1}/
+  @trailingSlash path_regexp ^(.*)/$
+  rewrite @trailingSlash {http.regexp.1}
+
+  respond /debug/* "Not Permitted" 403
+
+  # Reverse proxy to your binary
+  # reverse_proxy / localhost:8076
+  reverse_proxy localhost:8076
+  tls /etc/ssl/certs/selfsigned.crt /etc/ssl/certs/selfsigned.key
+  log {
+    output file /var/log/caddy/access.log
+  }
+}
+
+:8087 {
+  respond /debug/* "Not Permitted" 403
+  reverse_proxy localhost:22333 {
+        # Opciones adicionales del proxy (opcional)
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+        header_up X-Forwarded-For {remote}
+        header_up X-Forwarded-Proto {scheme}
+    }
+  # redir https://{host}{uri} permanent
+  @trailingSlash path_regexp ^(.*)/$
+  rewrite @trailingSlash {http.regexp.1}
+  log {
+    output file /var/log/caddy/access.log
+  }
+}

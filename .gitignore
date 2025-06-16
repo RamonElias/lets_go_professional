@@ -1,6 +1,6 @@
 .env
 .envrc
-Makefile
+# Makefile
 dump.sql
 bin/
 tmp/
