@@ -17,9 +17,9 @@ func commonHeaders(next http.Handler) http.Handler {
 		w.Header().Set("X-Frame-Options", "deny")
 		w.Header().Set("X-XSS-Protection", "0")
 
-		w.Header().Set("Server", "Go")
-		// w.Header().Set("Foo", "Bar")
-		// w.Header().Set("Bar", "Baz")
+		// w.Header().Set("Server", "Go")
+		w.Header().Set("Foo", "Bar")
+		w.Header().Set("Bar", "Baz")
 
 		next.ServeHTTP(w, r)
 	})
@@ -30,7 +30,8 @@ func noSurf(next http.Handler) http.Handler {
 	csrfHandler.SetBaseCookie(http.Cookie{
 		HttpOnly: true,
 		Path:     "/",
-		Secure:   true,
+		Secure:   false,
+		// Secure:   true,
 	})
 
 	return csrfHandler
