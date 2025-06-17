@@ -12,7 +12,6 @@ image: golang:latest
 stages:
   - setup
   - test
-  # - build
   - deploy
 
 # Stage 1: Decode and save the .env file as an artifact
@@ -42,17 +41,6 @@ format:
     - go vet $(go list ./... | grep -v /vendor/)
     # - go test -race $(go list ./... | grep -v /vendor/)
     # - go test -race $(go list ./... | grep -v /vendor/)
-    - make build/web/in-gitlab
-  artifacts:
-    paths:
-      - mybinaries
-    expire_in: 1 hour # Artifacts will expire and be deleted after 1 hour
-
-compile:
-  stage: build
-  script:
-    # - mkdir -p mybinaries
-    # - go build -o mybinaries ./...
     - make build/web/in-gitlab
   artifacts:
     paths:
