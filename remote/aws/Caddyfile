@@ -51,8 +51,8 @@
         header_up X-Forwarded-Proto {scheme}
     }
   # redir https://{host}{uri} permanent
-  @trailingSlash path_regexp ^(.*)/$
-  rewrite @trailingSlash {http.regexp.1}
+  # @trailingSlash path_regexp ^(.*)/$
+  # rewrite @trailingSlash {http.regexp.1}
   log {
     output file /var/log/caddy/access.log
   }
