@@ -1,5 +1,6 @@
 .env
 .envrc
+session
 # Makefile
 dump.sql
 bin/

@@ -23,7 +23,8 @@
 {{else}}
 <h3 class="title">There's nothing to see here... yet!</h3>
 {{end}}
-<script nonce="{{.Nonce}}">
+<!-- <script nonce="{{.Nonce}}"> -->
+<script>
   document.addEventListener("alpine:init", () => {
     Alpine.data("myComponent", () => ({
       message: "I need Alpine",
