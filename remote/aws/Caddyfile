@@ -43,6 +43,9 @@
 
 :8087 {
   respond /debug/* "Not Permitted" 403
+  header / {
+    +Vary "Cookie"
+  }
   # reverse_proxy localhost:22333 {
   #   transport http {
   #     max_request_body_size 10MB
