@@ -11,10 +11,9 @@ image: golang:latest
 
 stages:
   - setup
-  - test
   - deploy
 
-# Stage 1: Decode and save the .env file as an artifact
+# Stage 1: Decode and save the .env file and mybinaries folder as an artifacts
 setup_env:
   stage: setup
   script:
@@ -23,16 +22,7 @@ setup_env:
     # base64 ./.env | xclip -selection clipboard
     # Decode the Base64-encoded .env file and save it
     - echo "$ENV_FILE" | base64 --decode > .env
-  artifacts:
-    paths:
-      - .env # Persist the .env file for later stages
-    expire_in: 1 hour # Artifacts will expire and be deleted after 1 hour
-
-format:
-  stage: test
-  script:
-    # - echo "$ENV_FILE" | base64 --decode > .env
-    # - cat .env
+    - cat .env
     - go version
     - go env
     - make tidy
@@ -40,10 +30,10 @@ format:
     - go fmt $(go list ./... | grep -v /vendor/)
     - go vet $(go list ./... | grep -v /vendor/)
     # - go test -race $(go list ./... | grep -v /vendor/)
-    # - go test -race $(go list ./... | grep -v /vendor/)
     - make build/web/in-gitlab
   artifacts:
     paths:
+      - .env # Persist the .env file for later stages
       - mybinaries
     expire_in: 1 hour # Artifacts will expire and be deleted after 1 hour
 
