@@ -5,9 +5,9 @@ include .env
 GOOS ?= linux
 GOARCH ?= amd64
 
-# ==================================================================================== #
+# ================================================================================= #
 # HELPERS
-# ==================================================================================== #
+# ================================================================================= #
 
 ## help: print this help message
 .PHONY: help
@@ -19,15 +19,14 @@ help:
 confirm:
 	@echo -n 'Are you sure? [y/N] ' && read ans && [ $${ans:-N} = y ]
 
-# ==================================================================================== #
+# ================================================================================= #
 # DEVELOPMENT
-# ==================================================================================== #
+# ================================================================================= #
 
 ## with/fresh: run the application with fresh
 .PHONY: with/fresh
 with/fresh:
-	# IS NOT LOADING
-	# export $(grep -v '^#' ./.env | xargs)
+	# export $(grep -v '^#' ./.env | xargs) IS NOT LOADING
 	rm -rf ./tmp
 	fresh -c ./scripts/other_runner.conf
 
@@ -91,9 +90,9 @@ sqlc_generate_sqlite:
 	mkdir ./repository
 	sqlc generate
 
-# ==================================================================================== #
+# ================================================================================= #
 # QUALITY CONTROL
-# ==================================================================================== #
+# ================================================================================= #
 
 ## tidy: format all .go files, and tidy and vendor module dependencies
 .PHONY: tidy
@@ -119,9 +118,9 @@ audit:
 	@echo 'Running tests...'
 	go test -race -vet=off ./...
 
-# ==================================================================================== #
+# ================================================================================= #
 # BUILD
-# ==================================================================================== #
+# ================================================================================= #
 
 ## build/web: build the cmd/web application
 .PHONY: build/web
@@ -145,9 +144,27 @@ build/web/in-gitlab:
 	go build -ldflags="-s -w" -o=./mybinaries/web ./cmd/web
 	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags="-s -w" -o=./mybinaries/$(GOOS)_$(GOARCH)/web ./cmd/web
 
-# ==================================================================================== #
+# ================================================================================= #
+# LOCAL
+# ================================================================================= #
+
+## local/deploy: deploy the api to local
+.PHONY: local/deploy
+local/deploy:
+	echo `date '+%d/%m/%Y_%H:%M:%S'` > ~/coding/golang_code/deploys/web_app/deploy \
+	&& echo "web app" >> ~/coding/golang_code/deploys/web_app/deploy \
+	&& sudo systemctl stop web_app \
+	&& sudo systemctl stop caddy \
+	&& sudo cp ~/coding/golang_code/lets_go_professional/remote/local/web_app.service /etc/systemd/system/ \
+	&& sudo systemctl enable web_app \
+	&& sudo systemctl restart web_app \
+	&& sudo cp ~/coding/golang_code/lets_go_professional/remote/local/Caddyfile /etc/caddy/ \
+	&& sudo systemctl restart caddy \
+	&& sudo systemctl reload caddy
+
+# ================================================================================= #
 # PRODUCTION
-# ==================================================================================== #
+# ================================================================================= #
 
 aws_key = "~/.ssh/ED25519-i-03bf3e399564b8523.pem"
 aws_user = "ubuntu"

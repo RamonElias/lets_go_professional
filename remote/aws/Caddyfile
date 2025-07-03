@@ -46,7 +46,7 @@
   header / {
     +Vary "Cookie"
   }
-  # reverse_proxy localhost:22333 {
+  reverse_proxy localhost:22333 {
   #   transport http {
   #     max_request_body_size 10MB
   #     # max_request_body_size 100MB  # o el tamaño que necesites
@@ -57,12 +57,13 @@
   #   header_up X-Real-IP {remote}
   #   header_up X-Forwarded-For {remote}
   #   header_up X-Forwarded-Proto {scheme}
-  # }
+  }
   # redir https://{host}{uri} permanent
   # @trailingSlash path_regexp ^(.*)/$
   # rewrite @trailingSlash {http.regexp.1}
   log {
-    output file /var/log/caddy/access.log
+    # output file /var/log/caddy/access.log
+    output file /home/ubuntu/coding/deploys/web_app/access.log
     # level DEBUG
   }
 }
