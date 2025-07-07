@@ -1,6 +1,7 @@
 {{define "title"}}Home{{end}} {{define "main"}}
-<h1 x-data="myComponent" x-text="message"></h1>
 <h2 class="title">Latest Snippets</h2>
+<h1 x-data="myComponent" x-text="message"></h1>
+<h1 x-data="myComponent" x-text="message"></h1>
 {{if .Snippets}}
 <table class="table">
   <thead>
@@ -23,8 +24,8 @@
 {{else}}
 <h3 class="title">There's nothing to see here... yet!</h3>
 {{end}}
-<!-- <script nonce="{{.Nonce}}"> -->
-<script>
+<!-- <script> -->
+<script nonce="{{.Nonce}}">
   document.addEventListener("alpine:init", () => {
     Alpine.data("myComponent", () => ({
       message: "I need Alpine",

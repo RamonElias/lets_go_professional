@@ -19,6 +19,18 @@ help:
 confirm:
 	@echo -n 'Are you sure? [y/N] ' && read ans && [ $${ans:-N} = y ]
 
+.PHONY: set-deployenv
+set-deployenv:
+ifneq ($(deployenv),production)
+ifneq ($(deployenv),development)
+	@echo "Error: deployenv must be either 'production' or 'development'"
+	@exit 1
+endif
+endif
+	sed -i 's/^APP_ENV=.*/APP_ENV=$(deployenv)/' ./.env
+	@echo "environment set to $(deployenv)"
+# make set-deployenv deployenv=production
+
 # ================================================================================= #
 # DEVELOPMENT
 # ================================================================================= #
@@ -29,11 +41,6 @@ with/fresh:
 	# export $(grep -v '^#' ./.env | xargs) IS NOT LOADING
 	rm -rf ./tmp
 	fresh -c ./scripts/other_runner.conf
-
-## run/api: run the cmd/api application
-# .PHONY: run/api
-# run/api:
-# 	go run ./cmd/api -db-dsn=${GREENLIGHT_DB_DSN}
 
 ## db/fresh/local: drop and recreate the database
 .PHONY: db/fresh/local
@@ -150,17 +157,26 @@ build/web/in-gitlab:
 
 ## local/deploy: deploy the api to local
 .PHONY: local/deploy
-local/deploy:
+local/deploy: build/web
+	@APP_ENV_VALUE=$$(awk -F= '/^APP_ENV=/ {print $$2}' ./.env); \
 	echo `date '+%d/%m/%Y_%H:%M:%S'` > ~/coding/golang_code/deploys/web_app/deploy \
-	&& echo "web app" >> ~/coding/golang_code/deploys/web_app/deploy \
+	&& echo "web app $$APP_ENV_VALUE" >> ~/coding/golang_code/deploys/web_app/deploy \
 	&& sudo systemctl stop web_app \
-	&& sudo systemctl stop caddy \
-	&& sudo cp ~/coding/golang_code/lets_go_professional/remote/local/web_app.service /etc/systemd/system/ \
+	&& cp ./.env /home/lenovo/coding/golang_code/deploys/web_app/ \
+	&& rm -rf /home/lenovo/coding/golang_code/deploys/web_app/tls \
+	&& cp -R ./tls/ /home/lenovo/coding/golang_code/deploys/web_app/ \
+	&& cp ./bin/linux_amd64/web /home/lenovo/coding/golang_code/deploys/web_app/ \
+	&& sudo cp ./remote/local/web_app.service /etc/systemd/system/ \
+	&& sudo cp ./remote/local/Caddyfile /etc/caddy/ \
 	&& sudo systemctl enable web_app \
 	&& sudo systemctl restart web_app \
-	&& sudo cp ~/coding/golang_code/lets_go_professional/remote/local/Caddyfile /etc/caddy/ \
-	&& sudo systemctl restart caddy \
-	&& sudo systemctl reload caddy
+	&& cat ~/coding/golang_code/deploys/web_app/deploy
+	# && echo "web app" >> ~/coding/golang_code/deploys/web_app/deploy \
+	# && sed -i 's/^APP_ENV=.*/APP_ENV=production/' ./.env \
+	# && sudo systemctl stop caddy \
+	# && sudo systemctl restart web_app \
+	# && sudo systemctl restart caddy \
+	# && sudo systemctl reload caddy
 
 # ================================================================================= #
 # PRODUCTION
@@ -173,6 +189,8 @@ aws_ip = "ec2-44-204-169-221.compute-1.amazonaws.com"
 ## production/connect: connect to the production server
 .PHONY: production/connect
 production/connect:
+	# ssh -o IdentitiesOnly=yes -i ${aws_key} ${aws_user}@${aws_ip}
+	# ssh -o IdentitiesOnly=yes -i ${aws_key} ${aws_user}@${aws_ip}
 	ssh -o IdentitiesOnly=yes -i ${aws_key} ${aws_user}@${aws_ip}
 
 ## aws/deploy: deploy the api to aws

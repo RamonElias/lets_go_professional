@@ -8,16 +8,26 @@ import (
 	"github.com/justinas/nosurf"
 )
 
-func commonHeaders(next http.Handler) http.Handler {
+func (app *application) commonHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().
-			Set("Content-Security-Policy", "default-src 'self'; style-src 'self' fonts.googleapis.com; font-src fonts.gstatic.com")
+		nonce := app.generateNonce()
+		app.sessionManager.Put(r.Context(), "nonce", nonce)
+		fmt.Println("nonce commonHeaders --> ", nonce)
+
+		csp := fmt.Sprintf(`
+default-src 'self';
+img-src 'self' data:;
+style-src 'self' fonts.googleapis.com 'nonce-%s';
+font-src fonts.gstatic.com;
+script-src 'self' 'nonce-%s';
+`, nonce, nonce)
+
+		w.Header().Set("Content-Security-Policy", csp)
 		w.Header().Set("Referrer-Policy", "origin-when-cross-origin")
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("X-Frame-Options", "deny")
 		w.Header().Set("X-XSS-Protection", "0")
-
-		// w.Header().Set("Server", "Go")
+		w.Header().Set("Server", "Go")
 		w.Header().Set("Foo", "Bar")
 		w.Header().Set("Bar", "Baz")
 
@@ -25,14 +35,18 @@ func commonHeaders(next http.Handler) http.Handler {
 	})
 }
 
-func noSurf(next http.Handler) http.Handler {
+func (app *application) noSurf(next http.Handler) http.Handler {
+	isSecure := app.config.env == "production"
+	// fmt.Println("isSecure --> ", isSecure)
+
 	csrfHandler := nosurf.New(next)
 	csrfHandler.SetBaseCookie(http.Cookie{
 		// Domain:   "localhost",
+		// Secure:   true,
+		// Domain:   "*",
 		HttpOnly: true,
 		Path:     "/",
-		Secure:   true,
-		// Secure:   false,
+		Secure:   isSecure,
 	})
 
 	return csrfHandler

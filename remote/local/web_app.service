@@ -10,8 +10,12 @@ After=network.target
 
 # Configure service start rate limiting. If the service is (re)started more than 5 times 
 # in 600 seconds then don't permit it to start anymore.
-StartLimitIntervalSec=600
+StartLimitIntervalSec=22
 StartLimitBurst=5
+# Restart=on-failure
+# RestartSec=5s  # Aumenta este valor (ej. 10s, 30s)
+# StartLimitIntervalSec=60s
+# StartLimitBurst=5
 
 [Service]
 # Execute the API binary as the web_app user, loading the environment variables from
@@ -21,10 +25,10 @@ User=lenovo
 Group=lenovo
 EnvironmentFile=/etc/environment
 EnvironmentFile=/home/lenovo/coding/golang_code/deploys/web_app/.env
-WorkingDirectory=/home/lenovo/
+WorkingDirectory=/home/lenovo/coding/golang_code/deploys/web_app
 # ExecStart=export $(grep -v '^#' /home/ubuntu/coding/deploys/web_app/.env | xargs) && /home/ubuntu/coding/deploys/web_app/api -port=8076 -db-dsn=${SUPABASE_SESSION_POOLER_STRING} -env=production
 # ExecStart=/home/ubuntu/coding/deploys/web_app/web -port=8087 -db-dsn=${SUPABASE_SESSION_POOLER_STRING}
-ExecStart=/home/lenovo/coding/golang_code/deploys/web_app/web -db-dsn=${SUPABASE_SESSION_POOLER_STRING}
+ExecStart=/home/lenovo/coding/golang_code/deploys/web_app/web -port=22000 -db-dsn=${SUPABASE_SESSION_POOLER_STRING}
 
 # Automatically restart the service after a 5-second wait if it exits with a non-zero 
 # exit code. If it restarts more than 5 times in 600 seconds, then the rate limit we

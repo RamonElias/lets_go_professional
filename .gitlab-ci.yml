@@ -22,7 +22,9 @@ setup_env:
     # base64 ./.env | xclip -selection clipboard
     # Decode the Base64-encoded .env file and save it
     - echo "$ENV_FILE" | base64 --decode > .env
+    - sed -i 's/^APP_ENV=.*/APP_ENV=production/' ./.env
     - cat .env
+    - go version
     - go version
     - go env
     - make tidy

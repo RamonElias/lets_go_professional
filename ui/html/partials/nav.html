@@ -5,7 +5,8 @@
     <div class="container">
       <div class="navbar-brand">
         <a href="/" class="navbar-item">
-          <img src="/static/img/logo.png" alt="Logo" style="height: 30px" />
+          <!-- <img src="/static/img/logo.png" alt="Logo" style="height: 30px" /> -->
+          <img src="/static/img/logo.png" alt="Logo" />
         </a>
         <span class="navbar-burger" data-target="navbarMenuHeroA">
           <span></span>
@@ -17,21 +18,21 @@
       <div id="navbarMenuHeroA" class="navbar-menu">
         <div class="navbar">
           <a href="/" class="navbar-item ">
-            <span class="{{if (eq .Uri "/")}}has-text-success{{end}}"> Home </span>
+            <span class="{{if (eq .Uri " /")}}has-text-success{{end}}"> Home </span>
           </a>
           <a href="/about" class="navbar-item ">
-            <span class="{{if (eq .Uri "/about")}}has-text-success{{end}}"> About </span>
+            <span class="{{if (eq .Uri " /about")}}has-text-success{{end}}"> About </span>
           </a>
           {{if .IsAuthenticated}}
           <a href="/snippet/create" class="navbar-item ">
-            <span class="{{if (eq .Uri "/snippet/create")}}has-text-success{{end}}"> Create snippet </span>
+            <span class="{{if (eq .Uri " /snippet/create")}}has-text-success{{end}}"> Create snippet </span>
           </a>
           {{end}}
         </div>
         <div class="navbar-end">
           {{if .IsAuthenticated}}
           <a href="/account/view" class="navbar-item ">
-            <span class="{{if (eq .Uri "/account/view")}}has-text-success{{end}}"> Account </span>
+            <span class="{{if (eq .Uri " /account/view")}}has-text-success{{end}}"> Account </span>
           </a>
           <form action="/user/logout" method="POST">
             <span class="navbar-item">
@@ -49,10 +50,10 @@
           </form>
           {{else}}
           <a href="/user/signup" class="navbar-item ">
-            <span class="{{if (eq .Uri "/user/signup")}}has-text-success{{end}}"> Signup </span>
+            <span class="{{if (eq .Uri " /user/signup")}}has-text-success{{end}}"> Signup </span>
           </a>
           <a href="/user/login" class="navbar-item ">
-            <span class="{{if (eq .Uri "/user/login")}}has-text-success{{end}}"> Login </span>
+            <span class="{{if (eq .Uri " /user/login")}}has-text-success{{end}}"> Login </span>
           </a>
           {{end}}
         </div>

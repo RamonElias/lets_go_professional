@@ -29,14 +29,16 @@ func (app *application) isAuthenticated(r *http.Request) bool {
 func (app *application) newTemplateData(r *http.Request) templateData {
 	csrf_token := nosurf.Token(r)
 	fmt.Println("csrf_token --> ", csrf_token)
+
 	return templateData{
 		// CSRFToken:       nosurf.Token(r),
+		// Nonce:           app.generateNonce(),
 		CurrentYear:     time.Now().Year(),
 		Flash:           app.sessionManager.PopString(r.Context(), "flash"),
 		IsAuthenticated: app.isAuthenticated(r),
 		CSRFToken:       csrf_token,
 		Uri:             r.URL.RequestURI(),
-		Nonce:           app.generateNonce(),
+		Nonce:           app.sessionManager.PopString(r.Context(), "nonce"),
 	}
 }
 
@@ -142,6 +144,8 @@ func (app *application) generateNonce() string {
 		panic(err)
 	}
 	// Codifica en Base64 (sin "==" al final)
+	nonce := base64.StdEncoding.EncodeToString(bytes)
+	// fmt.Println("nonce --> ", nonce)
 	// return base64.StdEncoding.EncodeToString(bytes), nil
-	return base64.StdEncoding.EncodeToString(bytes)
+	return nonce[:len(nonce)-2] // Elimina los últimos dos caracteres "==" si es necesario
 }

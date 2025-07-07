@@ -90,7 +90,13 @@ func main() {
 	var cfg config
 
 	flag.IntVar(&cfg.port, "port", 22333, "HTTP network address")
-	flag.StringVar(&cfg.env, "env", "development", "Environment (development|staging|production)")
+	flag.StringVar(
+		&cfg.env,
+		"environment",
+		os.Getenv("APP_ENV"),
+		// "development",
+		"Environment (development|staging|production)",
+	)
 
 	// flag.StringVar(&cfg.db.dsn, "db-dsn", "", "PostgreSQL DSN")
 	flag.StringVar(&cfg.db.dsn, "db-dsn", os.Getenv("SNIPPETS_WEB_DB_DSN"), "PostgreSQL DSN")
@@ -137,7 +143,11 @@ func main() {
 	sessionManager.Store = postgresstore.New(db)
 	sessionManager.Lifetime = 12 * time.Hour
 	// Make sure that the Secure attribute is set on our session cookies. Setting this means that the cookie will only be sent by a user's web browser when a HTTPS connection is being used (and won't be sent over an unsecure HTTP connection).
-	sessionManager.Cookie.Secure = true
+	if cfg.env == "development" {
+		sessionManager.Cookie.Secure = false
+	} else {
+		sessionManager.Cookie.Secure = true
+	}
 
 	app := &application{
 		// debug:          *debug,
@@ -168,15 +178,30 @@ func main() {
 	}
 
 	logger.Info("starting server", "addr", srv.Addr)
-	// Call the new app.routes() method to get the servemux containing our routes, and pass that to http.ListenAndServe().
-	// err = http.ListenAndServe(":"+fmt.Sprint(cfg.port), app.routes())
-	err = srv.ListenAndServe()
-	// Use the ListenAndServeTLS() method to start the HTTPS server. We pass in the paths to the TLS certificate and corresponding private key as the two parameters.
-	// err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
+	current, _ := os.Getwd()
+	fmt.Println("current --> ", current)
+	if app.config.env == "development" {
+		// Call the new app.routes() method to get the servemux containing our routes, and pass that to http.ListenAndServe().
+		// err = http.ListenAndServe(":"+fmt.Sprint(cfg.port), app.routes())
+		fmt.Println("app.config.env --> ", app.config.env)
+		err = srv.ListenAndServe()
+	} else {
+		// Use the ListenAndServeTLS() method to start the HTTPS server. We pass in the paths to the TLS certificate and corresponding private key as the two parameters.
+		fmt.Println("app.config.env --> ", app.config.env)
+		// err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
+		err = srv.ListenAndServeTLS("./tls/selfsigned_web_app.crt", "./tls/selfsigned_web_app.key")
+	}
+
 	logger.Error(err.Error())
 	os.Exit(1)
 }
 
 // /home/lenovo/Downloads/letsgo/lets-go-professional-package231024/html/09.03-generating-a-self-signed-tls-certificate.html
 // go run /home/lenovo/coding/go/src/crypto/tls/generate_cert.go --rsa-bits=2048 --host=localhost
+// sed -i 's/^APP_ENV=.*/APP_ENV=development/' ./.env ; export $(grep -v '^#' ./.env | xargs) ; make with/fresh
+// sed -i 's/^APP_ENV=.*/APP_ENV=production/' ./.env ; export $(grep -v '^#' ./.env | xargs) ; make with/fresh
+// sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/selfsigned_web_app.key -out /etc/ssl/private/selfsigned_web_app.crt -subj "/C=VE/ST=DF/L=Caracas/O=Acme Ltd/OU=DevOps/CN=localhost/emailAddress=eliasramondos@gmail.com"
+// http://localhost:22333/
 // https://localhost:22333/
+// https://localhost:22000/
+// https://0.0.0.0:22000/

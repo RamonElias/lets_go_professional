@@ -5,16 +5,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" /> -->
   <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'nonce-{{.Nonce}}'" /> -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
   <title>{{template "title" .}} - Snippetbox</title>
   <!-- Link to the CSS stylesheet and favicon -->
   <!-- <link rel='stylesheet' href='/static/css/main.css'> -->
   <link rel="stylesheet" href="/static/css/bulma.min.css" />
   <!-- <link rel="stylesheet" href="/static/css/custom.min.css" /> -->
   <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" />
-  <script defer src="/static/js/alpine.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" nonce="{{.Nonce}}" />
+  <!-- <script defer src="/static/js/alpine.min.js"></script> -->
+  <script defer src="/static/js/alpinejs.csp.cdn.js" nonce="{{.Nonce}}"></script>
 </head>
 
 <body>
@@ -72,7 +73,6 @@
         Powered by <a href="https://golang.org/">Go</a> in {{.CurrentYear}}
       </p>
       <!-- {{.Uri}} -->
-      <!-- {{.Nonce}} -->
       <!-- {{.Nonce}} -->
     </div>
   </footer>

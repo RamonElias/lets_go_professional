@@ -8,6 +8,28 @@ import (
 	"snippets_web/ui"
 )
 
+// BUG:
+// redirectToHTTPS es una función middleware que redirige todas las solicitudes HTTP a HTTPS.
+func (app *application) redirectToHTTPS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if app.config.env == "development" {
+			next.ServeHTTP(w, r)
+		}
+
+		// Solo redirigimos si la conexión no es ya HTTPS
+		if r.Header.Get("X-Forwarded-Proto") != "https" && r.URL.Scheme != "https" {
+			target := "https://" + r.Host + r.URL.Path
+			if len(r.URL.RawQuery) > 0 {
+				target += "?" + r.URL.RawQuery
+			}
+			http.Redirect(w, r, target, http.StatusPermanentRedirect)
+			// return // Importante: detiene el procesamiento de la solicitud después de la redirección
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 func (app *application) routes() http.Handler {
 	mux := http.NewServeMux()
 
@@ -21,7 +43,13 @@ func (app *application) routes() http.Handler {
 	// Add a new GET /ping route.
 	mux.HandleFunc("GET /ping", ping)
 
-	dynamic := alice.New(app.sessionManager.LoadAndSave, noSurf, app.authenticate)
+	dynamic := alice.New(
+		// app.redirectToHTTPS,
+		app.sessionManager.LoadAndSave,
+		app.noSurf,
+		app.authenticate,
+		app.commonHeaders,
+	)
 
 	mux.Handle("GET /{$}", dynamic.ThenFunc(app.home))
 	mux.Handle("GET /about", dynamic.ThenFunc(app.about))
@@ -41,7 +69,8 @@ func (app *application) routes() http.Handler {
 	mux.Handle("POST /account/password/update", protected.ThenFunc(app.accountPasswordUpdatePost))
 	mux.Handle("POST /user/logout", protected.ThenFunc(app.userLogoutPost))
 
-	standard := alice.New(app.recoverPanic, app.logRequest, commonHeaders)
+	// standard := alice.New(app.recoverPanic, app.logRequest, app.commonHeaders)
+	standard := alice.New(app.recoverPanic, app.logRequest)
 
 	return standard.Then(mux)
 }

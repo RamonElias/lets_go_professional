@@ -4,19 +4,14 @@
   <input type="hidden" name="csrf_token" value="{{.CSRFToken}}" />
 
   {{range .Form.NonFieldErrors}}
-    <p class="help is-danger">{{.}}</p>
+  <p class="help is-danger">{{.}}</p>
   {{end}}
 
   <div class="field">
     <label class="label">Email</label>
     <div class="control">
-      <input
-        class="input {{with .Form.FieldErrors.email}} is-danger {{end}}"
-        name="email"
-        placeholder="Email"
-        type="text"
-        value="{{.Form.Email}}"
-      />
+      <input class="input {{with .Form.FieldErrors.email}} is-danger {{end}}" name="email" placeholder="Email"
+        type="text" value="{{.Form.Email}}" />
     </div>
     {{with .Form.FieldErrors.email}}
     <p class="help is-danger">{{.}}</p>
@@ -25,12 +20,8 @@
   <div class="field">
     <label class="label">Password</label>
     <div class="control">
-      <input
-        class="input {{with .Form.FieldErrors.password}} is-danger {{end}}"
-        name="password"
-        placeholder="***********"
-        type="password"
-      />
+      <input class="input {{with .Form.FieldErrors.password}} is-danger {{end}}" name="password"
+        placeholder="***********" type="password" />
     </div>
     {{with .Form.FieldErrors.password}}
     <p class="help is-danger">{{.}}</p>

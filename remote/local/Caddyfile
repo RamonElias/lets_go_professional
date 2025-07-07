@@ -1,15 +1,46 @@
-# Set the email address that should be used to contact you if there is a problem with 
-# your TLS certificates.
+# Set the email address that should be used to contact you if there is a problem with your TLS certificates.
 {
   email eliasramondos@gmail.com
 }
 
-:8087 {
+# :8087 {
+#   respond /debug/* "Not Permitted" 403
+#   redir https://{host}{uri}:22000 permanent
+# }
+
+:22000 {
+  reverse_proxy localhost:8087
+
+  # redir https://{host}{uri}:8087 permanent
+  # @noTrailingSlash path_regexp ^(.*[^/])$
+  # rewrite @noTrailingSlash {http.regexp.1}/
+  # @trailingSlash path_regexp ^(.*)/$
+  # rewrite @trailingSlash {http.regexp.1}
+
   respond /debug/* "Not Permitted" 403
+
+  # Reverse proxy to your binary
+  # reverse_proxy / localhost:8076
+  # reverse_proxy localhost:8076
+
+  # tls /etc/ssl/private/selfsigned_web_app.crt /etc/ssl/private/selfsigned_web_app.key
+  tls /home/lenovo/coding/golang_code/lets_go_professional/tls/selfsigned_web_app.crt /home/lenovo/coding/golang_code/lets_go_professional/tls/selfsigned_web_app.key
+  # tls {
+  # Optional: Specify protocols (default is TLS 1.2 and 1.3)
+  #     protocols tls1.2 tls1.3
+  # }
+
+  log {
+    output file /home/lenovo/coding/golang_code/deploys/web_app/access.log
+  }
+}
+
+# :22000 {
+#   respond /debug/* "Not Permitted" 403
   # header / {
   #   +Vary "Cookie"
   # }
-  reverse_proxy localhost:22333 {
+  # reverse_proxy localhost:22000 {
   #   transport http {
   #     max_request_body_size 10MB
   #     # max_request_body_size 100MB  # o el tamaño que necesites
@@ -20,12 +51,12 @@
   #   header_up X-Real-IP {remote}
   #   header_up X-Forwarded-For {remote}
   #   header_up X-Forwarded-Proto {scheme}
-  }
+  # }
   # redir https://{host}{uri} permanent
   # @trailingSlash path_regexp ^(.*)/$
   # rewrite @trailingSlash {http.regexp.1}
-  log {
-    output file /home/lenovo/coding/golang_code/deploys/web_app/access.log
+  # log {
+  #   output file /home/lenovo/coding/golang_code/deploys/web_app/access.log
     # level DEBUG
-  }
-}
+  # }
+# }
