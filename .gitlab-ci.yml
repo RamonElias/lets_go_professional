@@ -33,6 +33,8 @@ setup_env:
     - go vet $(go list ./... | grep -v /vendor/)
     # - go test -race $(go list ./... | grep -v /vendor/)
     - make build/web/in-gitlab
+    - where openssl
+    # - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./tls/selfsigned_web_app.key -out ./tls/selfsigned_web_app.crt -subj "/C=VE/ST=DF/L=Caracas/O=Acme Ltd/OU=DevOps/CN=localhost/emailAddress=eliasramondos@gmail.com"
   artifacts:
     paths:
       - .env # Persist the .env file for later stages
