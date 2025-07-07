@@ -51,5 +51,5 @@ deploy:
     # Copy the mybinaries folder to the EC2 instance using scp
     # scp -o IdentitiesOnly=yes -i ~/.ssh/ED25519-i-03bf3e399564b8523.pem
     # - scp -o StrictHostKeyChecking=no -i ./ec2-key.pem -r mybinaries/linux_amd64/web "$EC2_PATH":"$SCP_PATH"
-    - scp -o StrictHostKeyChecking=no -i ./ec2-key.pem mybinaries/linux_amd64/web remote/aws/web_app.service remote/aws/Caddyfile "$EC2_PATH":"$SCP_PATH"
+    - scp -r -o StrictHostKeyChecking=no -i ./ec2-key.pem mybinaries/linux_amd64/web remote/aws/web_app.service remote/aws/Caddyfile tls "$EC2_PATH":"$SCP_PATH"
     - ssh -t -o StrictHostKeyChecking=no -i ./ec2-key.pem "$EC2_PATH" 'echo `date '+%d/%m/%Y_%H:%M:%S'` web_app from gitlab > ~/coding/deploys/deploy && sudo cp ~/coding/deploys/web_app/web_app.service /etc/systemd/system/ && sudo systemctl enable web_app && sudo systemctl restart web_app && sudo cp ~/coding/deploys/web_app/Caddyfile /etc/caddy/ && sudo systemctl restart caddy && sudo systemctl reload caddy'

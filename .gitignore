@@ -6,5 +6,5 @@ dump.sql
 bin/
 tmp/
 node_modules/
-tls/
+# tls/
 **/.null-ls*

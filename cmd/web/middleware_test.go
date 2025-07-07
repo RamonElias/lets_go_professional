@@ -11,6 +11,7 @@ import (
 )
 
 func TestCommonHeaders(t *testing.T) {
+	app := newTestApplication(t)
 	rr := httptest.NewRecorder()
 
 	r, err := http.NewRequest(http.MethodGet, "/", nil)
@@ -22,7 +23,7 @@ func TestCommonHeaders(t *testing.T) {
 		w.Write([]byte("OK"))
 	})
 	// Pass the mock HTTP handler to our commonHeaders middleware. Because commonHeaders *returns* a http.Handler we can call its ServeHTTP() method, passing in the http.ResponseRecorder and dummy http.Request to execute it.
-	commonHeaders(next).ServeHTTP(rr, r)
+	app.commonHeaders(next).ServeHTTP(rr, r)
 	// Call the Result() method on the http.ResponseRecorder to get the results of the test.
 	rs := rr.Result()
 
