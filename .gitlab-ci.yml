@@ -33,8 +33,6 @@ setup_env:
     - go vet $(go list ./... | grep -v /vendor/)
     # - go test -race $(go list ./... | grep -v /vendor/)
     - make build/web/in-gitlab
-    - where openssl
-    # - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./tls/selfsigned_web_app.key -out ./tls/selfsigned_web_app.crt -subj "/C=VE/ST=DF/L=Caracas/O=Acme Ltd/OU=DevOps/CN=localhost/emailAddress=eliasramondos@gmail.com"
   artifacts:
     paths:
       - .env # Persist the .env file for later stages
@@ -49,7 +47,7 @@ deploy:
     - echo "$EC2_PEM_KEY" | base64 --decode > ec2-key.pem
     - chmod 400 ec2-key.pem # Set proper permissions for the .pem file
     # Stop the WEB APP and Caddy services
-    - ssh -t -o StrictHostKeyChecking=no -i ./ec2-key.pem "$EC2_PATH" 'echo `date '+%d/%m/%Y_%H:%M:%S'` > ~/coding/deploys/deploy && sudo systemctl stop web_app && sudo systemctl stop caddy'
+    - ssh -t -o StrictHostKeyChecking=no -i ./ec2-key.pem "$EC2_PATH" 'echo `date '+%d/%m/%Y_%H:%M:%S'` > ~/coding/deploys/deploy && sudo systemctl stop web_app && sudo systemctl stop caddy && openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./selfsigned_web_app.key -out ./selfsigned_web_app.crt -subj "/C=VE/ST=DF/L=Caracas/O=Acme Ltd/OU=DevOps/CN=0.0.0.0/emailAddress=eliasramondos@gmail.com"'
     # Copy the mybinaries folder to the EC2 instance using scp
     # scp -o IdentitiesOnly=yes -i ~/.ssh/ED25519-i-03bf3e399564b8523.pem
     # - scp -o StrictHostKeyChecking=no -i ./ec2-key.pem -r mybinaries/linux_amd64/web "$EC2_PATH":"$SCP_PATH"
