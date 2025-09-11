@@ -28,6 +28,7 @@ EnvironmentFile=/home/lenovo/coding/golang_code/deploys/web_app/.env
 WorkingDirectory=/home/lenovo/coding/golang_code/deploys/web_app
 # ExecStart=export $(grep -v '^#' /home/ubuntu/coding/deploys/web_app/.env | xargs) && /home/ubuntu/coding/deploys/web_app/api -port=8076 -db-dsn=${SUPABASE_SESSION_POOLER_STRING} -env=production
 # ExecStart=/home/ubuntu/coding/deploys/web_app/web -port=8087 -db-dsn=${SUPABASE_SESSION_POOLER_STRING}
+# ExecStart=/home/lenovo/coding/golang_code/deploys/web_app/web -port=22000 -db-dsn=${CONNECTION_STRING}
 ExecStart=/home/lenovo/coding/golang_code/deploys/web_app/web -port=22000 -db-dsn=${SUPABASE_SESSION_POOLER_STRING}
 
 # Automatically restart the service after a 5-second wait if it exits with a non-zero 

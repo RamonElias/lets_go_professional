@@ -8,8 +8,8 @@
 #   redir https://{host}{uri}:22000 permanent
 # }
 
-:22000 {
-  reverse_proxy localhost:8087
+:8087 {
+  reverse_proxy localhost:22000
 
   # redir https://{host}{uri}:8087 permanent
   # @noTrailingSlash path_regexp ^(.*[^/])$

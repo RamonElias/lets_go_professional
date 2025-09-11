@@ -64,8 +64,8 @@ type application struct {
 }
 
 func openDB(cfg config) (*sql.DB, error) {
+	fmt.Println("cfg.db.dsn --> ", cfg.db.dsn)
 	db, err := sql.Open("postgres", cfg.db.dsn)
-	// fmt.Println("cfg.db.dsn --> ", cfg.db.dsn)
 	if err != nil {
 		return nil, err
 	}
@@ -73,6 +73,19 @@ func openDB(cfg config) (*sql.DB, error) {
 	db.SetMaxOpenConns(cfg.db.maxOpenConns)
 	db.SetMaxIdleConns(cfg.db.maxIdleConns)
 	db.SetConnMaxIdleTime(cfg.db.maxIdleTime)
+
+	// Configurar search_path después de conectar
+	_, err = db.Exec("SET search_path TO snippets")
+	if err != nil {
+		// log.Fatal("Error configurando search_path:", err)
+		fmt.Println("Error in search_path --> ", err)
+	}
+	var searchPath string
+	err = db.QueryRow("SHOW search_path").Scan(&searchPath)
+	if err != nil {
+		fmt.Println("err --> ", err)
+	}
+	fmt.Println("searchPath --> ", searchPath)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -99,7 +112,7 @@ func main() {
 	)
 
 	// flag.StringVar(&cfg.db.dsn, "db-dsn", "", "PostgreSQL DSN")
-	flag.StringVar(&cfg.db.dsn, "db-dsn", os.Getenv("SNIPPETS_WEB_DB_DSN"), "PostgreSQL DSN")
+	flag.StringVar(&cfg.db.dsn, "db-dsn", os.Getenv("CONNECTION_STRING"), "PostgreSQL DSN")
 
 	flag.IntVar(&cfg.db.maxOpenConns, "db-max-open-conns", 25, "PostgreSQL max open connections")
 	flag.IntVar(&cfg.db.maxIdleConns, "db-max-idle-conns", 25, "PostgreSQL max idle connections")
@@ -187,7 +200,7 @@ func main() {
 		err = srv.ListenAndServe()
 	} else {
 		// Use the ListenAndServeTLS() method to start the HTTPS server. We pass in the paths to the TLS certificate and corresponding private key as the two parameters.
-		fmt.Println("app.config.env --> ", app.config.env)
+		fmt.Println("else app.config.env --> ", app.config.env)
 		// err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
 		err = srv.ListenAndServeTLS("./tls/selfsigned_web_app.crt", "./tls/selfsigned_web_app.key")
 	}
