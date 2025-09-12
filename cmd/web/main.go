@@ -202,7 +202,8 @@ func main() {
 		// Use the ListenAndServeTLS() method to start the HTTPS server. We pass in the paths to the TLS certificate and corresponding private key as the two parameters.
 		fmt.Println("else app.config.env --> ", app.config.env)
 		// err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
-		err = srv.ListenAndServeTLS("./tls/selfsigned_web_app.crt", "./tls/selfsigned_web_app.key")
+		// err = srv.ListenAndServeTLS("./tls/selfsigned_web_app.crt", "./tls/selfsigned_web_app.key")
+		err = srv.ListenAndServe()
 	}
 
 	logger.Error(err.Error())
@@ -211,6 +212,7 @@ func main() {
 
 // /home/lenovo/Downloads/letsgo/lets-go-professional-package231024/html/09.03-generating-a-self-signed-tls-certificate.html
 // go run /home/lenovo/coding/go/src/crypto/tls/generate_cert.go --rsa-bits=2048 --host=localhost
+
 // sed -i 's/^APP_ENV=.*/APP_ENV=development/' ./.env ; export $(grep -v '^#' ./.env | xargs) ; make with/fresh
 // sed -i 's/^APP_ENV=.*/APP_ENV=production/' ./.env ; export $(grep -v '^#' ./.env | xargs) ; make with/fresh
 // sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/selfsigned_web_app.key -out /etc/ssl/private/selfsigned_web_app.crt -subj "/C=VE/ST=DF/L=Caracas/O=Acme Ltd/OU=DevOps/CN=localhost/emailAddress=eliasramondos@gmail.com"

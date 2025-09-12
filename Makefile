@@ -49,8 +49,8 @@ db/fresh/local:
 	echo ${LOCAL_DB_DSN}
 	# psql ${POSTGRESQL_DB_DSN} -v password=123456 -f ./queries_postgresql/local_db.sql
 	psql ${POSTGRESQL_DB_DSN} --set password=${DB_PASSWORD} --no-psqlrc -f ./queries_postgresql/local_db.sql
-## db/seed/schema: seed the database with initial data for schema snippets
 
+## db/seed/schema: seed the database with initial data for schema snippets
 .PHONY: db/seed/schema
 db/seed/schema:
 	@echo 'Running up migrations ...'
@@ -210,11 +210,9 @@ tls_path = "./tls"
 production/connect:
 	ssh -o IdentitiesOnly=yes -i ${aws_key} ${aws_user}@${aws_ip}
 
-## aws/deploy: deploy the api to aws
+## aws/deploy: deploy the web_app to aws
 .PHONY: aws/deploy
 aws/deploy:
-	# scp -o IdentitiesOnly=yes -i ${aws_key} ${env} ${binary} ${service_file} ${caddy_file} ${scp_path}
-	# scp -o IdentitiesOnly=yes -i ${aws_key} ./.env ./bin/linux_amd64/web ./remote/aws/web_app.service ./remote/aws/Caddyfile ${aws_user}@${aws_ip}:/home/ubuntu/coding/deploys/web_app/
 	mkdir -p ./to_package
 	cp ${env_file} ${env_file_temp}
 	cp -R ${env_file_temp} ${binary} ${service_file} ${caddy_file} ${tls_path} ./to_package
@@ -222,8 +220,8 @@ aws/deploy:
 	scp -o IdentitiesOnly=yes -i ${aws_key} ${package_file} ${aws_user}@${aws_ip}:${home_aws_path}/
 	rm -rf ./to_package ${env_file_temp} ${package_file}
 	ssh -t -o IdentitiesOnly=yes -i ${aws_key} ${aws_user}@${aws_ip} '\
-		echo `date '+%d/%m/%Y_%H:%M:%S'` > ~/deploy \
-		&& echo "web app" >> ~/deploy \
+		echo `date '+%d/%m/%Y_%H:%M:%S'` > ~/deploy_snippets \
+		&& echo "web app" >> ~/deploy_snippets \
 		&& sudo systemctl stop web_app \
 		&& sudo systemctl stop caddy \
 		&& rm -rf ${deploy_aws_path} \
@@ -240,7 +238,9 @@ aws/deploy:
 		&& sudo systemctl reload caddy \
 	'
 
+# scp -o IdentitiesOnly=yes -i ${aws_key} ${env} ${binary} ${service_file} ${caddy_file} ${scp_path}
 # scp -o IdentitiesOnly=yes -i ${aws_key} ./.env ./bin/linux_amd64/web ./remote/aws/web_app.service ./remote/aws/Caddyfile ${aws_user}@${aws_ip}:/home/ubuntu/coding/deploys/web_app/
+#
 # https://stackoverflow.com/questions/19331497/set-environment-variables-from-file-of-key-value-pairs
 # export $(grep -v '^#' ./.env | xargs)
 # unset $(grep -v '^#' .env | sed -E 's/(.*)=.*/\1/' | xargs)
@@ -265,4 +265,3 @@ aws/deploy:
 #
 # sudo chmod 644 /etc/ssl/certs/selfsigned.crt
 # sudo chmod 644 /etc/ssl/certs/selfsigned.key
-#
